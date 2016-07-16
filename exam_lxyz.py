@@ -232,7 +232,7 @@ def updateStandardAns(uuid):
 				STANDARD_ANSWERS[q] = int(q)*3	
 
 if __name__ == "__main__":
-	''' 主函数 '''
+	''' 主函数 '''	
 	# 设置获取服务器cookie，否则某些请求无法通过服务器验证
 	cj = cookielib.LWPCookieJar()
 	cookie_support = urllib2.HTTPCookieProcessor(cj) 
@@ -250,13 +250,12 @@ if __name__ == "__main__":
 			for uuid in FAKE_USERS:
 				fd.write(uuid + '\n')
 	else:
-		# 采用预设的伪用户，可直接获得标准答案
-		global FAKE_USERS
+		# 采用预设的伪用户，可直接获得标准答案		
 		with open('fakeUsers.txt','r') as fd:
 			for uuid in fd.readlines():
 				FAKE_USERS.append(uuid)
 		print '正在获取标准答案...'
-		for uuid in FAKE_USER:
+		for uuid in FAKE_USERS:
 			updateStandardAns(uuid)
 	# print STANDARD_ANSWERS
 
