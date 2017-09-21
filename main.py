@@ -18,11 +18,8 @@ import time
 
 BASE_URL = 'http://ks.gdycjy.gov.cn' # 基础域名
 
-# 预先使用几个设定好的用户来撞本次试题库，可以加快程序运行速度
-# 也可以设置成自动生成伪用户，创建试题库的过程会较为繁琐（当预设的伪用户失效时可用）
-IS_AUTO_FAKE_USER = True
 # 为了避免漏掉题目，设置10个伪用户，可能导致较长的运行时间
-FAKE_USER_NUM = 1
+FAKE_USER_NUM = 0
 # 预设的伪用户
 FAKE_USERS = []
 QUES_BANK_LIB = 'ques_bank.csv'		# 本地题库
@@ -62,7 +59,7 @@ def getHtml(url):
 		html = page.read()	
 		return html
 	except Exception, e:
-		print '预设伪用户失效，请将IS_AUTO_FAKE_USER设为True', e
+		print e
 		sys.exit()
 		
 
