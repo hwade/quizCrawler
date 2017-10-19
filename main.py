@@ -140,6 +140,7 @@ def genFakeUser(quesBank):
 		# 提交答案，随缘作答
 		submitAnswers(uuid,ques,quesBank)
 
+		time.sleep(10)
 		# 更新标准答案
 		mark, quesBank = updateStandardAns(uuid, quesBank)
 		print 'fake user: %s %s score'%(fakeMobile, mark)
@@ -166,7 +167,7 @@ def getQuestions(uuid, quesBank):
 	for i in range(1,6):
 		# 1~5页问题
 		html = getHtml(BASE_URL + "/kQuestion.shtml?act=getQuestions&uuid=" + uuid + "&pageNo=" + str(i))
-		soup = BeautifulSoup(html)
+		soup = BeautifulSoup(html, "html5lib")
 		quesDesc = soup.find_all('div',attrs={'class':'txtMg'})
 
 		quesReg = re.compile(ur'[0-9]+[\u3001]')
@@ -205,6 +206,7 @@ def submitAnswers(uuid, questions, quesBank):
 	finalUrl = finalUrl[:-3]
 	# 提交答案请求，直接通过url传送答案
 	html = getHtml(finalUrl)
+
 	if not html.find('true')>-1:
 		print questions
 		print finalUrl
@@ -214,10 +216,11 @@ def updateStandardAns(uuid, quesBank):
 	''' 更新标准答案 '''
 	# 获取infoId，用来获取答案页面
 	html = getHtml(BASE_URL + "/kUserPlayer.shtml?act=getKUserAnserInfoList&uuid=" + uuid)
-	soup = BeautifulSoup(html)
+	soup = BeautifulSoup(html, "html5lib")
+	print BASE_URL + "/kUserPlayer.shtml?act=getKUserAnserInfoList&uuid=" + uuid
 	table = soup.find_all('table',attrs={"class":"gridtable"})[0]
 	mark = table.find_all('tr')[1].find_all('td')[1].text
-	href = str(BeautifulSoup(str(table)).find_all("a")[0]).split('"')[1]
+	href = str(BeautifulSoup(str(table), "html5lib").find_all("a")[0]).split('"')[1]
 	href = href.replace('&amp;','&')
 	href = href.replace('answerCurHistory','getHistory')
 	# print href
@@ -225,11 +228,11 @@ def updateStandardAns(uuid, quesBank):
 		# 1~5页答案
 		# print BASE_URL + href + uuid + "&pageNo=" + str(i)
 		html = getHtml(BASE_URL + href + uuid + "&pageNo=" + str(i))
-		soup = BeautifulSoup(html)
+		soup = BeautifulSoup(html, "html5lib")
 		divs = soup.find_all("div",attrs={"class":"txtMg"})
 		for div in divs:
 			# 默认所有checked的li为答案选项（不一定是正确答案）
-			inputs = BeautifulSoup(str(div)).find_all("li")
+			inputs = BeautifulSoup(str(div), "html5lib").find_all("li")
 			checked_li = ''
 			for i in inputs:
 				if str(i).find('checked') > -1:
@@ -262,6 +265,7 @@ if __name__ == "__main__":
 	for ui in range(FAKE_USER_NUM):	
 		quesBank = genFakeUser(quesBank)
 
+	print quesBank
 	# 验证码
 	genPatchca()
 	showPatchca()
@@ -271,12 +275,12 @@ if __name__ == "__main__":
 	# 注册个人信息，此处用raw_input才不会报错
 	name = raw_input('输入你的真实名字：')
 	# school = input('选择学校对应的号码：')
-	
+
 	# 随机生成电话号码	
 	mobile = input('输入你的手机号：')
 	chk_mobile = checkUserIsRegist(mobile)
 	while chk_mobile == False:
-		mobile = input('输入你的手机号：')
+		mobile = input('手机号码已被注册，请输入你未注册的手机号：')
 		chk_mobile = checkUserIsRegist(mobile)
 	postData = { 
 		'name': name,
@@ -303,8 +307,10 @@ if __name__ == "__main__":
 		# 提交标准答案
 		submitAnswers(uuid, ques, quesBank)
 
+		# 延迟查询，网速太快会查询不到答题记录
+		time.sleep(20)
+
 		mark, quesBank = updateStandardAns(uuid, quesBank)
-		print '%s: %s %s score'%(name, mobile, mark)
-		
-	quesBank.to_csv(QUES_BANK_LIB, index=False)
+		print name, mobile, mark
+	#quesBank.to_csv(QUES_BANK_LIB, index=False)
 	print '完成！'
