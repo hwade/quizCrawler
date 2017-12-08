@@ -26,8 +26,8 @@ IV_KEY = 'zst_encrtypt_key'
 
 # 为了避免漏掉题目，设置10个伪用户，可能导致较长的运行时间
 FAKE_USER_NUM = 0
-# 预设的伪用户
-FAKE_USERS = []
+
+# FAKE_USERS = []
 QUES_BANK_LIB = 'ques_bank.csv'			# 本地题库
 STANDARD_ANSWERS = {}					# 试题的标准答案
 AREA_NAME = '省委教育工委'		
@@ -137,7 +137,7 @@ def genPatchca():
 
 def genFakeUser(quesBank):
 	''' 伪造用户，获取正确答案 '''
-	global FAKE_USERS
+	# global FAKE_USERS
 	genPatchca()
 
 	# 识别验证码
@@ -185,7 +185,7 @@ def genFakeUser(quesBank):
 			return quesBank
 
 		# 保存伪用户uuid，下次再运行可直接使用
-		FAKE_USERS.append(uuid)
+		# FAKE_USERS.append(uuid)
 
 		# 获得题目编号，返回本次问题id和更新的题库
 		ques, quesBank = getQuestions(uuid,quesBank)	
